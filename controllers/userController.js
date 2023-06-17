@@ -12,7 +12,7 @@ const userSignup = async (req, res) => {
     try {
         const existingUser = await userSchema.findOne({ userEmail: userEmail })
         if (existingUser) {
-            await fs.unlink(req.file.path)
+            fs.unlinkSync(req.file.path)
             return res.status(409).json({
                 success: true,
                 message: "Email already registered"
@@ -29,7 +29,7 @@ const userSignup = async (req, res) => {
     } catch (err) {
         return res.status(500).json({
             success: false,
-            error: err.message
+            error: err.stack
         })
     }
 }
@@ -80,7 +80,7 @@ const forgetPassword = async (req, res) => {
                 from: process.env.EMAIL,
                 to: req.body.userEmail,
                 subject: "Password recovery link",
-                html: `<p>below link is valid only for 5 minutes</p><a href=${resetPasswordLink}}>Click on link to reset the password</a>`,
+                html: `<p>below link is valid only for 5 minutes</p><a href=${resetPasswordLink}>Click on link to reset the password</a>`,
             })
             res.status(200).json({
                 success: true,
@@ -129,7 +129,7 @@ const resetPassword = async (req, res) => {
                 });
             }
         } else {
-            res.status(403).json({
+            res.status(404).json({
                 success: false,
                 message: "email user is not found"
             });

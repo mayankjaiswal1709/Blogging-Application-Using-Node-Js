@@ -1,15 +1,15 @@
 const mongoose = require("mongoose")
 
 const commentSchema = new mongoose.Schema({
-    comment_title: {
+    cmnt_title: {
         type: String,
         //require: true,
     },
-    comment_description: {
+    cmnt_description: {
         type: String,
         //require: true,
     },
-    comment_Role: {
+    cmnt_Role: {
         type: String,
         default: "user",
     },

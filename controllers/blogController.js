@@ -1,29 +1,31 @@
+const fs = require("fs")
 const blogSchema = require('../models/blogSchema')
 
 // Add new blog
-const addNewBlog = async (req, res) => {
-    const blogData = new blogSchema(req.body)
+const addBlog = async (req, res) => {
     try {
-        if (blogData != null) {
+        const blogData = new blogSchema(req.body);
+        if (blogData != "") {
+            blogData.blogImg = `/uploads/${(req.file.filename)}`;
             await blogData.save();
             return res.status(409).json({
                 success: true,
-                message: "Blog added successfully",
-                blogDetails: blogData
-            })
+                message: "Congratulation!! your blog created Successfully",
+                blogData: blogData,
+            });
         } else {
             return res.status(404).json({
                 success: false,
-                message: "no blog added"
-            })
+                error: "no blog created try again",
+            });
         }
     } catch (err) {
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
-            error: err.message
-        })
+            error: err.stack,
+        });
     }
-}
+};
 
 // view all blogs
 const getAllBlogs = async (req, res) => {
@@ -50,21 +52,22 @@ const getAllBlogs = async (req, res) => {
 
 // like and dislike on blog API
 const likeAndDislike = async (req, res) => {
-    const { blogId, blogLike } = req.params
+    const { blogid, bloglike } = req.params
     try {
-        const myBlogLike = await blogSchema.findById(blogId).select('blogLike')
-        if (blogLike === 'true') {
+        const myBlogLike = await blogSchema.findById(blogid).select('blogLike')
+        if (bloglike === 'true') {
             let likes = myBlogLike.bloglike
             likes++
-            await blogSchema.findOneAndUpdate(myBlogLike._id, { $set: { blogLikes: likes } }, { new: true })
+            await blogSchema.findOneAndUpdate(myBlogLike._id, { $set: { bloglike: likes } }, { new: true })
             res.status(200).json({
                 success: true,
-                message: "liked successfully"
+                message: "liked successfully",
+                like: likes
             })
         } else {
             let likes = myBlogLike.bloglike
             likes--
-            await blogSchema.findOneAndUpdate(myBlogLike._id, { $set: { blogLikes: likes } }, { new: true })
+            await blogSchema.findOneAndUpdate(myBlogLike._id, { $set: { bloglike: likes } }, { new: true })
             res.status(200).json({
                 success: true,
                 message: "disliked successfully"
@@ -73,18 +76,17 @@ const likeAndDislike = async (req, res) => {
     } catch (err) {
         return res.status(500).json({
             success: false,
-            error: err.message
+            error: err.stack
         })
     }
 }
 
 // Update blog by blogID
 const editBlogById = async (req, res) => {
-    const { blogId } = req.params
-    const blogData = await blogSchema.findByIdAndUpdate(blogId, req.body)
+    const { blogid } = req.params
+    const blogData = await blogSchema.findByIdAndUpdate(blogid, req.body, { new: true })
     try {
-        if (blogData != "") {
-            await blogData.save();
+        if (blogData) {
             return res.status(200).json({
                 success: true,
                 message: "blog edited successfully",
@@ -107,8 +109,8 @@ const editBlogById = async (req, res) => {
 
 //delete blog by blogID
 const deleteBlogById = async (req, res) => {
-    const { blogId } = req.params
-    const blogData = await blogSchema.findByIdAndDelete(blogId)
+    const { blogid } = req.params
+    const blogData = await blogSchema.findByIdAndDelete(blogid)
     try {
         if (blogData != null) {
             return res.status(200).json({
@@ -130,4 +132,4 @@ const deleteBlogById = async (req, res) => {
         })
     }
 }
-module.exports = { addNewBlog, getAllBlogs, likeAndDislike, editBlogById, deleteBlogById }
+module.exports = { addBlog, getAllBlogs, likeAndDislike, editBlogById, deleteBlogById }

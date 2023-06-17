@@ -1,4 +1,4 @@
-const { boolean } = require("joi")
+const { boolean, string } = require("joi")
 const mongoose = require("mongoose")
 
 const blogSchema = new mongoose.Schema({
@@ -15,8 +15,8 @@ const blogSchema = new mongoose.Schema({
         //require: true,
         default: true
     },
-    blogImage: {
-        tyep: String,
+    blogImg: {
+        type: String,
         //require: true
     },
     blogRole: {
@@ -24,7 +24,7 @@ const blogSchema = new mongoose.Schema({
         default: "user",
     },
     bloglike: {
-        type: Boolean,
+        type: String,
         default: true,
     },
     isActive: {

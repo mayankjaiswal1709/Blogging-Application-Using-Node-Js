@@ -1,4 +1,5 @@
 const joi = require('joi')
+
 const userValidationSchema = {
     registerUser: joi
         .object({

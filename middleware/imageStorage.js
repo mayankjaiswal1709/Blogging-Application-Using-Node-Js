@@ -6,7 +6,7 @@ const imageConfig = multer.diskStorage({
         callback(null, path.join(__dirname, "..", "/uploads"))
     },
     filename: (req, file, callback) => {
-        callback(null, `image_${Date.now()}_${file.filename}`);
+        callback(null, `image_${Date.now()}_${file.originalname}`);
     }
 })
 const isImage = (req, file, callback) => {

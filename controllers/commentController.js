@@ -2,19 +2,29 @@ const commentSchema = require('../models/commentsSchema')
 
 // add comment API
 const addComment = async (req, res) => {
-    const commentData = new commentSchema(req.body)
-    if (commentData != "") {
-        await commentData.save()
-        return res.status(200).json({
-            success: true,
-            message: "comment added successfully",
-        })
-    } else {
-        return res.status(404).json({
+    try {
+        const commentData = new commentSchema(req.body)
+            if (commentData !="") {
+            await commentData.save()
+            return res.status(200).json({
+                success: true,
+                message: "comment added successfully",
+                data: commentData
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "no data added"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
             success: false,
-            message: "no data added"
-        })
+            error: err.stack,
+        });
     }
+
+
 }
 
 // view all comments
